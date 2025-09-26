@@ -248,44 +248,59 @@ body {
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Email login aktif (bisa dari session, localStorage, atau Supabase Auth)
-  const emailLogin = "user@example.com"; // Ganti dengan email login dinamis
+  // Email login aktif (harus dinamis di versi produksi)
+  const emailLogin = "user@example.com"; // Ganti dengan email login dari session atau Supabase Auth
 
   // Ambil data user dari Supabase
-  const { data: userData, error } = await supabase
-    .from('tb_anggota')
-    .select('email, user_aktif, instansi')
-    .eq('email', emailLogin)
-    .single();
+  async function ambilDataUser(email) {
+    const { data, error } = await supabase
+      .from('tb_anggota')
+      .select('email, user_aktif, instansi')
+      .eq('email', email)
+      .maybeSingle(); // Hindari error jika tidak ada data
 
-  if (error || !userData) {
-    alert("❌ Gagal mengambil data user dari Supabase.");
-    throw error;
+    if (error) {
+      console.error("❌ Supabase error:", error);
+      alert("❌ Gagal mengambil data user dari Supabase.");
+      return null;
+    }
+
+    if (!data) {
+      alert("❌ Email tidak ditemukan di tb_anggota.");
+      return null;
+    }
+
+    return data;
   }
 
-  // Logika akses fitur
-  document.querySelectorAll('.logo-box').forEach(box => {
-    const fiturDipilih = box.getAttribute('data-fitur');
+  // Jalankan logika akses
+  const userData = await ambilDataUser(emailLogin);
 
-    box.addEventListener('click', () => {
-      if (userData.user_aktif === "super admin") {
-        alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-        // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
-      } else if (userData.user_aktif === "admin") {
-        if (userData.instansi === fiturDipilih) {
-          alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+  if (userData) {
+    document.querySelectorAll('.logo-box').forEach(box => {
+      const fiturDipilih = box.getAttribute('data-fitur');
+
+      box.addEventListener('click', () => {
+        if (userData.user_aktif === "super admin") {
+          alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
           // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        } else if (userData.user_aktif === "admin") {
+          if (userData.instansi === fiturDipilih) {
+            alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+            // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+          } else {
+            alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+          }
         } else {
-          alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+          alert("❌ Status user tidak dikenali atau tidak aktif.");
         }
-      } else {
-        alert("❌ Status user tidak dikenali atau tidak aktif.");
-      }
+      });
     });
-  });
+  }
 </script>
 </body>
 </html>
+
 
 
 
