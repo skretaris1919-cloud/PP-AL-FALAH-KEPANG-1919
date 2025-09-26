@@ -276,14 +276,15 @@
         user_aktif: "pending"
       }]);
 
-    if (insertError) {
-      alert("Gagal simpan ke tb_anggota: " + insertError.message);
-    } else {
-      alert("✅ Pendaftaran berhasil! Silakan cek email untuk verifikasi.");
-      document.getElementById('form-daftar').reset();
-    }
+if (insertError) {
+  alert("Gagal simpan ke tb_anggota: " + insertError.message);
+} else {
+  alert("✅ Pendaftaran berhasil! Mengarahkan ke dashboard...");
+  window.location.href = `https://skretaris1919-cloud.github.io/PP-AL-FALAH-KEPANG-1919/UTAMA.html?email=${encodeURIComponent(email)}`;
+}
   });
 </script>
 
 </body>
+
 </html>
