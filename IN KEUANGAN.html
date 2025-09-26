@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Keuangan Modular</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+.form-container {
+  background: #fff;
+  padding: 18px;
+  border-radius: 6px;
+  max-width: 1100px;
+  margin: auto;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.row-8col {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .row-8col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.row-full,
+.row-4col-wide {
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+label {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 600;
+  font-size: 9px;
+  color: #333;
+}
+
+input,
+select,
+textarea,
+button {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 10px;
+  box-sizing: border-box;
+}
+
+input[readonly] {
+  background-color: #F0FFF0;
+}
+
+button {
+  background-color: #32cd32;
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #228b22;
+}
+
+table.data-table {
+  font-size: 7px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  font-size: 7px;
+  padding: 5px 8px;
+  border: 0px solid #ddd;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #eef2f7;
+}
+
+.data-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.data-table tbody tr.baru-disimpan {
+  background-color: #e6ffe6 !important;
+}
+
+.btn-aksi {
+  padding: 1px 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background-color: #A5D6A7;
+  color: #1B5E20;
+}
+
+.btn-hapus {
+  background-color: #EF9A9A;
+  color: #B71C1C;
+}
+
+.aksi-wrapper {
+  display: inline-flex;
+  gap: 3px;
+  flex-wrap: nowrap;
+}
+
+.grafik-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  max-width: 1000px;
+  margin: auto;
+  background: #f7f7f7;
+  border-radius: 6px;
+  min-height: 120px;
+}
+
+.grafik-box {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.grafik-box h3 {
+  font-size: 10px;
+  margin-bottom: 6px;
+  text-align: center;
+  color: #333;
+}
+
+canvas {
+  width: 100% !important;
+  height: 130px !important;
+}
+
+.chart-container {
+  width: 90%;
+  max-width: 700px;
+  margin: 24px auto;
+  background: #fff;
+  padding: 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+ </style>
+</head>
+<body>
+
+<div class="grafik-row">
+  <div class="grafik-box">
+    <h3 style="text-align:center;">Pengeluaran Bulanan</h3>
+    <canvas id="grafikPengeluaranBulanan"></canvas>
+  </div>
+  <div class="grafik-box">
+    <h3 style="text-align:center;">Pemasukan Bulanan</h3>
+    <canvas id="grafikPemasukanBulanan"></canvas>
+  </div>
+<div class="grafik-box">
+  <h3 style="text-align:center;">Grafik Pasti Bulanan</h3>
+  <canvas id="grafikPastiBulanan"></canvas>
+</div>
+<div class="grafik-box">
+  <h3 style="text-align:center;">Grafik Tidak Pasti Bulanan</h3>
+  <canvas id="grafikTidakPastiBulanan"></canvas>
+</div>
+</div>
+
+
+<div class="form-container">
+  <form id="form-keuangan">
+    <div class="row-8col">
+      <div>
+        <label for="instansi">Instansi:</label>
+        <select id="instansi"><option value="">Memuat data...</option></select>
+      </div>
+      <div>
+        <label for="status">Status:</label>
+	<select id="status">
+  	<option value="" disabled selected>-- Pilih Status --</option>
+  	<option value="Masuk">Masuk</option>
+  	<option value="Keluar">Keluar</option>
+	</select>
+      </div>
+      <div>
+        <label for="kriteria">Kriteria:</label>
+	<select id="kriteria">
+  	<option value="" disabled selected>-- Pilih Kriteria --</option>
+  	<option value="Pasti">Pasti</option>
+  	<option value="Tidak Pasti">Tidak Pasti</option>
+	</select>
+      </div>
+      <div>
+        <label for="volume">Volume:</label>
+        <input type="text" id="volume" placeholder="Qty">
+      </div>
+      <div>
+        <label for="nilai_satuan">Nilai Satuan:</label>
+        <input type="text" id="nilai_satuan" placeholder="Rp">
+      </div>
+       <div>
+        <label for="limit">Limit Pengeluaran:</label>
+        <input type="text" id="limit" placeholder="Rp" readonly>
+      </div>
+      <div>
+        <label for="ttl_pengeluaran_keluar">Ttl Pengeluaran:</label>
+        <input type="text" id="ttl_pengeluaran_keluar" placeholder="Rp" readonly>
+      </div>
+      <div>
+        <label for="total_nilai_2">Total Nilai:</label>
+        <input type="text" id="total_nilai_2" placeholder="Rp" readonly>
+      </div>
+    </div>
+
+    <div class="row-4col-wide">
+      <div>
+        <label for="judul">Judul:</label>
+        <input type="text" id="judul" placeholder="Contoh: Pengeluaran Operasional Bulanan">
+      </div>
+      <div>
+        <label for="deskripsi">Deskripsi:</label>
+        <textarea id="deskripsi" rows="1" placeholder="Tuliskan deskripsi..."></textarea>
+      </div>
+<div>
+  <label for="saldo_global_input">Saldo terakhir (Global):</label>
+  <input type="text" id="saldo_global_input" placeholder="Rp" readonly>
+</div>
+<div>
+  <label for="saldo_pasti">Saldo Pasti (Global):</label>
+  <input type="text" id="saldo_pasti" placeholder="Rp" readonly class="saldo-hijau">
+</div>
+    </div>
+
+    <div class="row-full">
+<div>
+  <label for="saldo_pasti_bulan_ini">Saldo Pasti Bulan Ini:</label>
+  <input type="text" id="saldo_pasti_bulan_ini" placeholder="Rp" readonly>
+</div>
+<div>
+  <label for="saldo_update">Saldo Update (Global):</label>
+  <input type="text" id="saldo_update" placeholder="Rp" readonly>
+</div>
+      <button type="submit">SIMPAN</button>
+    </div>
+  </form>
+
+<table class="data-table" id="tabel-keuangan">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Tanggal</th>
+      <th>Deskripsi</th>
+      <th>Instansi</th>
+      <th>Status</th>
+      <th>Kriteria</th>
+      <th>Volume</th>
+      <th>Nilai Satuan</th>
+      <th>Total Nilai</th>
+      <th>Saldo terahir</th>
+      <th>Keterangan</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const SUPABASE_URL = 'https://nhhgqnxtgepywtsuacas.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oaGdxbnh0Z2VweXd0c3VhY2FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3Mzc2MTMsImV4cCI6MjA3NDMxMzYxM30.0lt-G1ffQ8cNJA-j1t5juevwFGug1cMfOlhgzlxXNDA';
+
+
+async function tampilkanGrafikTidakPastiBulanan() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,created_at,status,kriteria`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+
+  // Filter hanya kriteria 'Tidak Pasti'
+  const tidakPasti = data.filter(item => item.kriteria === 'Tidak Pasti');
+
+  // Kelompokkan per bulan
+  const perBulan = {};
+  tidakPasti.forEach(item => {
+    const bulan = item.created_at?.slice(0, 7); // Format 'YYYY-MM'
+    if (!perBulan[bulan]) perBulan[bulan] = { masuk: 0, keluar: 0 };
+    if (item.status === 'Masuk') perBulan[bulan].masuk += parseInt(item.total_nilai || 0);
+    else if (item.status === 'Keluar') perBulan[bulan].keluar += parseInt(item.total_nilai || 0);
+  });
+
+  const bulanList = Object.keys(perBulan).sort();
+  const dataMasuk = bulanList.map(b => perBulan[b].masuk);
+  const dataKeluar = bulanList.map(b => perBulan[b].keluar);
+
+  const ctx = document.getElementById('grafikTidakPastiBulanan').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: bulanList,
+      datasets: [
+        {
+          label: 'Pemasukan Tidak Pasti',
+          data: dataMasuk,
+          fill: true,
+          backgroundColor: 'rgba(52, 152, 219, 0.2)',
+          borderColor: '#3498db',
+          tension: 0.3
+        },
+        {
+          label: 'Pengeluaran Tidak Pasti',
+          data: dataKeluar,
+          fill: true,
+          backgroundColor: 'rgba(155, 89, 182, 0.2)',
+          borderColor: '#9b59b6',
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: value => 'Rp ' + value.toLocaleString('id-ID')
+          }
+        }
+      }
+    }
+  });
+}
+// 🔁 Panggil saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  tampilkanGrafikPengeluaranBulanan();
+  tampilkanGrafikPemasukanBulanan();
+  tampilkanGrafikPastiBulanan();
+  tampilkanGrafikTidakPastiBulanan();
+});
+
+async function tampilkanGrafikPastiBulanan() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,created_at,status,kriteria`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+
+  // Filter hanya kriteria 'Pasti'
+  const pasti = data.filter(item => item.kriteria === 'Pasti');
+
+  // Kelompokkan per bulan
+  const perBulan = {};
+  pasti.forEach(item => {
+    const bulan = item.created_at?.slice(0, 7); // Format 'YYYY-MM'
+    if (!perBulan[bulan]) perBulan[bulan] = { masuk: 0, keluar: 0 };
+    if (item.status === 'Masuk') perBulan[bulan].masuk += parseInt(item.total_nilai || 0);
+    else if (item.status === 'Keluar') perBulan[bulan].keluar += parseInt(item.total_nilai || 0);
+  });
+
+  const bulanList = Object.keys(perBulan).sort();
+  const dataMasuk = bulanList.map(b => perBulan[b].masuk);
+  const dataKeluar = bulanList.map(b => perBulan[b].keluar);
+
+  const ctx = document.getElementById('grafikPastiBulanan').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: bulanList,
+      datasets: [
+        {
+          label: 'Pemasukan Pasti',
+          data: dataMasuk,
+          fill: true,
+          backgroundColor: 'rgba(46, 204, 113, 0.2)',
+          borderColor: '#2ecc71',
+          tension: 0.3
+        },
+        {
+          label: 'Pengeluaran Pasti',
+          data: dataKeluar,
+          fill: true,
+          backgroundColor: 'rgba(231, 76, 60, 0.2)',
+          borderColor: '#e74c3c',
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: value => 'Rp ' + value.toLocaleString('id-ID')
+          }
+        }
+      }
+    }
+  });
+}
+
+// 🔁 Panggil saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  tampilkanGrafikPengeluaranBulanan();
+  tampilkanGrafikPemasukanBulanan();
+  tampilkanGrafikPastiBulanan();
+  tampilkanGrafikTidakPastiBulanan();
+});
+
+
+
+async function tampilkanGrafikPemasukanBulanan() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,created_at,status`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+
+  // Filter hanya status 'Masuk'
+  const masuk = data.filter(item => item.status === 'Masuk');
+
+  // Kelompokkan total_nilai per bulan
+  const perBulan = {};
+  masuk.forEach(item => {
+    const bulan = item.created_at?.slice(0, 7); // Format 'YYYY-MM'
+    perBulan[bulan] = (perBulan[bulan] || 0) + parseInt(item.total_nilai || 0);
+  });
+
+  const bulanList = Object.keys(perBulan).sort();
+  const nilaiList = bulanList.map(b => perBulan[b]);
+
+  // Render Chart.js
+  const ctx = document.getElementById('grafikPemasukanBulanan').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: bulanList,
+      datasets: [{
+        label: 'Total Pemasukan',
+        data: nilaiList,
+        backgroundColor: '#2ecc71'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: value => 'Rp ' + value.toLocaleString('id-ID')
+          }
+        }
+      }
+    }
+  });
+}
+
+// 🔁 Panggil saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  tampilkanGrafikPengeluaranBulanan();
+  tampilkanGrafikPemasukanBulanan();
+});
+
+
+async function tampilkanGrafikPengeluaranBulanan() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,created_at,status`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+
+  // Filter hanya status 'Keluar'
+  const keluar = data.filter(item => item.status === 'Keluar');
+
+  // Kelompokkan total_nilai per bulan
+  const perBulan = {};
+  keluar.forEach(item => {
+    const bulan = item.created_at?.slice(0, 7); // Format 'YYYY-MM'
+    perBulan[bulan] = (perBulan[bulan] || 0) + parseInt(item.total_nilai || 0);
+  });
+
+  const bulanList = Object.keys(perBulan).sort();
+  const nilaiList = bulanList.map(b => perBulan[b]);
+
+  // Render Chart.js
+  const ctx = document.getElementById('grafikPengeluaranBulanan').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: bulanList,
+      datasets: [{
+        label: 'Total Pengeluaran',
+        data: nilaiList,
+        backgroundColor: '#e74c3c'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: value => 'Rp ' + value.toLocaleString('id-ID')
+          }
+        }
+      }
+    }
+  });
+}
+
+// 🔁 Panggil saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  tampilkanGrafikPengeluaranBulanan();
+});
+
+
+function formatRibuan(nilai) {
+  const bersih = parseInt(nilai, 10);
+  return bersih.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function parseAngka(str) {
+  return parseInt(str.replace(/\./g, "").replace(/[^0-9]/g, ""), 10) || 0;
+}
+
+function hitungTotal() {
+  const volume = parseAngka(document.getElementById('volume').value);
+  const satuan = parseAngka(document.getElementById('nilai_satuan').value);
+  const total = volume * satuan;
+  document.getElementById('total_nilai_2').value = formatRibuan(total);
+}
+
+async function isiDropdownInstansi() {
+  const dropdown = document.getElementById('instansi');
+  dropdown.innerHTML = '<option value="">Memuat...</option>';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_limit?select=instansi`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    const data = await res.json();
+    const instansiSet = new Set();
+    dropdown.innerHTML = '<option value="">-- Pilih Instansi --</option>';
+    data.forEach(item => {
+      const nama = item.instansi?.trim();
+      if (nama && !instansiSet.has(nama)) {
+        instansiSet.add(nama);
+        const opt = document.createElement('option');
+        opt.value = nama;
+        opt.textContent = nama;
+        dropdown.appendChild(opt);
+      }
+    });
+  } catch (err) {
+    dropdown.innerHTML = '<option value="">Gagal memuat</option>';
+  }
+}
+
+async function simpanKeuangan(data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ...data, created_at: new Date().toISOString() })
+  });
+  if (!res.ok) throw new Error("Gagal simpan data");
+}
+
+async function tampilkanDataKeuangan() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=*&order=created_at.desc`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const data = await res.json();
+  const tbody = document.querySelector('#tabel-keuangan tbody');
+  tbody.innerHTML = '';
+
+  data.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    if (index === 0) tr.classList.add('baru-disimpan'); // Baris terbaru
+
+    tr.innerHTML = `
+      <td>${item.id}</td>
+      <td>${item.created_at}</td>
+      <td>${item.judul}</td>
+      <td>${item.instansi}</td>
+      <td>${item.status}</td>
+      <td>${item.kriteria}</td>
+      <td>${formatRibuan(item.volume)}</td>
+      <td>${formatRibuan(item.nilai_satuan)}</td>
+      <td>Rp ${formatRibuan(item.total_nilai)}</td>
+      <td>Rp ${formatRibuan(item.saldo_terakhir || 0)}</td>
+      <td>${item.deskripsi}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function hitungSaldoGlobal() {
+  fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,status`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    let masuk = 0, keluar = 0;
+    data.forEach(item => {
+      const nilai = parseInt(item.total_nilai || 0);
+      if (item.status === 'Masuk') masuk += nilai;
+      else if (item.status === 'Keluar') keluar += nilai;
+    });
+    const saldo = masuk - keluar;
+    const el = document.getElementById('saldo_global_input');
+    el.value = `Rp ${saldo.toLocaleString('id-ID')}`;
+    el.setAttribute('data-saldo', saldo); // ⏺️ Simpan nilai mentah untuk hitungSaldoUpdate
+    hitungSaldoUpdate();
+  });
+}
+
+function hitungSaldoUpdate() {
+  const total = parseAngka(document.getElementById('total_nilai_2').value);
+  const saldo = parseAngka(document.getElementById('saldo_global_input').value);
+  const hasil = saldo - total;
+  const el = document.getElementById('saldo_update');
+  el.value = `Rp ${hasil.toLocaleString('id-ID')}`;
+  el.style.color = hasil >= 0 ? 'green' : 'red';
+}
+
+async function ambilLimitBulanan(instansiId) {
+  if (!instansiId) return;
+  const url = `${SUPABASE_URL}/rest/v1/tb_limit?instansi=eq.${encodeURIComponent(instansiId)}&select=lm_bulanan`;
+  const headers = {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`
+  };
+  const res = await fetch(url, { headers });
+  const data = await res.json();
+  const inputLimit = document.getElementById('limit');
+  if (data.length > 0 && data[0].lm_bulanan != null) {
+    inputLimit.value = formatRibuan(parseInt(data[0].lm_bulanan));
+  } else {
+    inputLimit.value = '';
+  }
+}
+
+async function ambilTotalKeluar(instansiId) {
+  if (!instansiId) return;
+  const url = `${SUPABASE_URL}/rest/v1/tb_keuangan?instansi=eq.${encodeURIComponent(instansiId)}&status=eq.Keluar&select=total_nilai`;
+  const headers = {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`
+  };
+  const res = await fetch(url, { headers });
+  const data = await res.json();
+  const totalKeluar = data.reduce((sum, item) => sum + parseInt(item.total_nilai || 0), 0);
+  document.getElementById('ttl_pengeluaran_keluar').value = formatRibuan(totalKeluar);
+}
+
+async function hitungSaldoPastiGlobal() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,status,kriteria`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+  let masuk = 0, keluar = 0;
+
+  data.forEach(item => {
+    const nilai = parseInt(item.total_nilai || 0);
+    if (item.kriteria === 'Pasti') {
+      if (item.status === 'Masuk') masuk += nilai;
+      else if (item.status === 'Keluar') keluar += nilai;
+    }
+  });
+
+  const saldoPasti = masuk - keluar;
+  const el = document.getElementById('saldo_pasti');
+  el.value = `Rp ${saldoPasti.toLocaleString('id-ID')}`;
+}
+
+async function hitungSaldoPastiBulanIni() {
+  const now = new Date();
+  const bulanIni = now.toISOString().slice(0, 7); // Format: '2025-09'
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tb_keuangan?select=total_nilai,status,kriteria,created_at`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const data = await res.json();
+  let masuk = 0, keluar = 0;
+
+  data.forEach(item => {
+    const nilai = parseInt(item.total_nilai || 0);
+    const created = item.created_at?.slice(0, 7); // Ambil 'YYYY-MM'
+    if (item.kriteria === 'Pasti' && created === bulanIni) {
+      if (item.status === 'Masuk') masuk += nilai;
+      else if (item.status === 'Keluar') keluar += nilai;
+    }
+  });
+
+  const saldoBulanIni = masuk - keluar;
+  const el = document.getElementById('saldo_pasti_bulan_ini');
+  el.value = `Rp ${saldoBulanIni.toLocaleString('id-ID')}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  isiDropdownInstansi();
+  tampilkanDataKeuangan();
+  hitungSaldoGlobal();
+  hitungSaldoPastiGlobal();
+  hitungSaldoPastiBulanIni();
+
+  // 🔁 Input listener untuk volume & nilai satuan
+  ['volume', 'nilai_satuan'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      el.value = formatRibuan(parseAngka(el.value));
+      hitungTotal();
+      hitungSaldoUpdate();
+    });
+  });
+
+  // 🔄 Listener saat instansi dipilih
+  document.getElementById('instansi').addEventListener('change', function () {
+    const instansiTerpilih = this.value.trim();
+    ambilLimitBulanan(instansiTerpilih);
+    ambilTotalKeluar(instansiTerpilih);
+  });
+
+  // 📝 Submit form keuangan
+  document.getElementById('form-keuangan').addEventListener('submit', async (e) => {
+    e.preventDefault();
+const data = {
+  judul: document.getElementById('judul').value.trim(),
+  instansi: document.getElementById('instansi').value.trim(),
+  status: document.getElementById('status').value,
+  kriteria: document.getElementById('kriteria').value,
+  volume: parseAngka(document.getElementById('volume').value),
+  nilai_satuan: parseAngka(document.getElementById('nilai_satuan').value),
+  total_nilai: parseAngka(document.getElementById('total_nilai_2').value),
+  deskripsi: document.getElementById('deskripsi').value.trim(),
+  saldo_terakhir: parseAngka(document.getElementById('saldo_global_input').value) // ⏫ Ini penting
+};
+
+try {
+  await simpanKeuangan(data);
+
+  // ⏫ Hitung ulang saldo dulu sebelum reset
+  await hitungSaldoGlobal();
+  await hitungSaldoPastiGlobal();
+  await hitungSaldoPastiBulanIni();
+  await tampilkanDataKeuangan();
+
+  console.log("✅ Data berhasil disimpan dan saldo diperbarui");
+
+  // ⏬ Baru reset form setelah semua saldo ditampilkan
+  document.getElementById('form-keuangan').reset();
+  document.getElementById('total_nilai_2').value = '';
+  document.getElementById('saldo_update').value = '';
+} catch (err) {
+  console.error("❌ Gagal simpan atau update:", err);
+  alert("❌ Gagal simpan data: " + err.message);
+}
+  });
+});
+</script>
+</body>
+</html>
