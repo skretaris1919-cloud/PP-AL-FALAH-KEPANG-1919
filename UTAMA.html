@@ -236,8 +236,10 @@
 
   console.log("📥 Email login yang digunakan:", emailLogin);
 
+  // 🔒 Fallback jika email tetap tidak terbaca
   if (!emailLogin) {
-    alert("❌ Tidak ada email login. Silakan login dulu.");
+    alert("❌ Tidak ada email login. Silakan login melalui halaman LOGIN.");
+    window.location.href = 'https://skretaris1919-cloud.github.io/PP-AL-FALAH-KEPANG-1919/LOGIN.html';
     throw new Error("Email login tidak ditemukan.");
   }
 
@@ -276,22 +278,23 @@
     box.addEventListener('click', () => {
       if (data.user_aktif === "super admin") {
         alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-        // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
       } else if (data.user_aktif === "admin") {
         if (data.instansi === fiturDipilih) {
           alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-                  window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+          window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        } else {
+          alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+        }
       } else {
-        alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+        alert("❌ Status user tidak dikenali atau belum aktif.");
       }
-    } else {
-      alert("❌ Status user tidak dikenali atau belum aktif.");
-    }
+    });
   });
-});
 </script>
 </body>
 </html>
+
 
 
 
