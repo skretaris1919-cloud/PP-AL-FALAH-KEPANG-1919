@@ -242,24 +242,50 @@ body {
 
 
 <script>
-  // Simulasi data user aktif dan jabatan (bisa diganti dari Supabase)
-  const userAktif = "admin"; // atau "super admin"
-  const jabatan = "Keuangan"; // misalnya dari Supabase
+  // Simulasi data user aktif dari Supabase
+  const emailLogin = "user@example.com"; // email login aktif
+  const dataUserAktif = {
+    email: "user@example.com",
+    user_aktif: "admin", // atau "super admin"
+    instansi: "Keuangan", // misalnya "Keamanan", "Broadcast", dll
+    jabatan: "Bendahara"
+  };
 
   document.querySelectorAll('.logo-box').forEach(box => {
-    const fitur = box.getAttribute('data-fitur');
+    const fiturDipilih = box.getAttribute('data-fitur');
 
     box.addEventListener('click', () => {
-      if (userAktif === "super admin" || fitur === jabatan) {
-        alert("Akses ke fitur: " + fitur);
-        // bisa lanjut ke halaman lain atau buka modal
-      } else {
-        alert("❌ Akses ditolak. Jabatan tidak sesuai untuk fitur, atau menunggu persetujuan super admin: " + fitur);
+      // Validasi email cocok
+      if (emailLogin !== dataUserAktif.email) {
+        alert("❌ Email tidak cocok. Silakan login ulang.");
+        return;
       }
+
+      // Super admin: akses semua fitur
+      if (dataUserAktif.user_aktif === "super admin") {
+        alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+        // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        return;
+      }
+
+      // Admin: hanya bisa akses fitur sesuai instansi
+      if (dataUserAktif.user_aktif === "admin") {
+        if (dataUserAktif.instansi === fiturDipilih) {
+          alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+          // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        } else {
+          alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+        }
+        return;
+      }
+
+      // Jika status tidak dikenali
+      alert("❌ Status user tidak dikenali atau tidak aktif.");
     });
   });
 </script>
 </body>
 </html>
+
 
 
