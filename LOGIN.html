@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Pendaftaran Akun Baru</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .form-container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    .form-row {
+      display: flex;
+      gap: 16px;
+    }
+    .form-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .toggle-sandi {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #2e7d32;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    button {
+      margin-top: 20px;
+      background: #2e7d32;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1b5e20;
+    }
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Pendaftaran Akun Baru</h2>
+    <form id="form-daftar">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="no_id">No ID:</label>
+          <input type="text" id="no_id" name="no_id" required>
+        </div>
+        <div class="form-group">
+          <label for="wa">Nomor WA:</label>
+          <input type="text" id="wa" name="wa" placeholder="628xxx..." required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nama">Nama Lengkap:</label>
+        <input type="text" id="nama" name="nama" required>
+      </div>
+
+      <div class="form-group">
+        <label for="alamat">Alamat:</label>
+        <input type="text" id="alamat" name="alamat">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="instansi">Instansi:</label>
+          <input list="list-instansi" id="instansi" name="instansi">
+          <datalist id="list-instansi"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="jabatan">Jabatan:</label>
+          <input list="list-jabatan" id="jabatan" name="jabatan">
+          <datalist id="list-jabatan"></datalist>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="sandi">Kata Sandi:</label>
+        <input type="password" id="sandi" name="sandi" required>
+        <span class="toggle-sandi" onclick="toggleSandi('sandi')">👁️ Tampilkan</span>
+        <div class="error" id="error-sandi"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="konfirmasi">Konfirmasi Sandi:</label>
+        <input type="password" id="konfirmasi" name="konfirmasi" required>
+        <span class="toggle-sandi" onclick="toggleSandi('konfirmasi')">👁️ Tampilkan</span>
+        <div class="error" id="error-konfirmasi"></div>
+      </div>
+
+      <button type="submit">Daftar</button>
+    </form>
+  </div>
+
+ <script>
+  const supabase = window.supabase.createClient(
+    'https://brnqpdvtninzyqqwhmfj.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc'
+  );
+
+  async function loadOptions() {
+    const { data, error } = await supabase
+      .from('tb_anggota')
+      .select('instansi, jabatan');
+
+    if (error || !data) return;
+
+    const instansiSet = new Set();
+    const jabatanSet = new Set();
+
+    data.forEach(row => {
+      if (row.instansi) instansiSet.add(row.instansi);
+      if (row.jabatan) jabatanSet.add(row.jabatan);
+    });
+
+    const instansiList = document.getElementById('list-instansi');
+    const jabatanList = document.getElementById('list-jabatan');
+
+    instansiSet.forEach(val => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      instansiList.appendChild(opt);
+    });
+
+    jabatanSet.forEach(val => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      jabatanList.appendChild(opt);
+    });
+  }
+
+  loadOptions();
+
+  function toggleSandi(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  document.getElementById('form-daftar').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const sandi = document.getElementById('sandi').value.trim();
+    const konfirmasi = document.getElementById('konfirmasi').value.trim();
+    const wa = document.getElementById('wa').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    const errorSandi = document.getElementById('error-sandi');
+    const errorKonfirmasi = document.getElementById('error-konfirmasi');
+
+    errorSandi.textContent = '';
+    errorKonfirmasi.textContent = '';
+
+    let valid = true;
+
+    if (!wa.startsWith('628')) {
+      alert("Nomor WA harus dimulai dengan 628.");
+      valid = false;
+    }
+
+    if (sandi.length < 6) {
+      errorSandi.textContent = 'Sandi minimal 6 karakter.';
+      valid = false;
+    }
+
+    if (sandi !== konfirmasi) {
+      errorKonfirmasi.textContent = 'Konfirmasi sandi tidak cocok.';
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const nama = document.getElementById('nama').value.trim();
+    const no_id = document.getElementById('no_id').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    const instansi = document.getElementById('instansi').value.trim();
+    const jabatan = document.getElementById('jabatan').value.trim();
+
+    // 🔍 Cek apakah email sudah ada di tb_anggota
+    const { data: existing, error: cekError } = await supabase
+      .from('tb_anggota')
+      .select('email')
+      .eq('email', email)
+      .limit(1);
+
+    if (cekError) {
+      alert("Gagal cek email: " + cekError.message);
+      return;
+    }
+
+    if (existing.length > 0) {
+      alert("Email sudah terdaftar. Mengarahkan ke halaman isi...");
+      window.location.href = `UTAMA.html?email=${encodeURIComponent(email)}`;
+      return;
+    }
+
+    // 🔐 Daftar ke Supabase Auth
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: sandi,
+      options: {
+        emailRedirectTo: 'https://skretaris1919-cloud.github.io/PP-AL-FALAH-KEPANG-1919/UTAMA.html',
+        data: {
+          nama: nama,
+          no_id: no_id,
+          wa: wa,
+          alamat: alamat,
+          instansi: instansi,
+          jabatan: jabatan
+        }
+      }
+    });
+
+    if (error) {
+      alert("Gagal daftar: " + error.message);
+      return;
+    }
+
+    // 🗂️ Simpan ke tb_anggota
+    const { error: insertError } = await supabase
+      .from('tb_anggota')
+      .insert([{
+        no_id: no_id,
+        nama: nama,
+        alamat: alamat,
+        instansi: instansi,
+        jabatan: jabatan,
+        wa: wa,
+        email: email,
+        status: "pending",
+        user_aktif: "pending"
+      }]);
+
+    if (insertError) {
+      alert("Gagal simpan ke tb_anggota: " + insertError.message);
+    } else {
+      alert("✅ Pendaftaran berhasil! Silakan cek email untuk verifikasi.");
+      document.getElementById('form-daftar').reset();
+    }
+  });
+</script>
+
+</body>
+</html>
