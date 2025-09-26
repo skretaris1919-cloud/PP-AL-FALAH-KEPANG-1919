@@ -157,57 +157,65 @@
     </div>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const supabaseUrl = 'https://brnqpdvtninzyqqwhmfj.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+  // Inisialisasi Supabase
+  const supabaseUrl = 'https://brnqpdvtninzyqqwhmfj.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const emailLogin = "user@example.com"; // Ganti dengan email login dinamis
+  // Ambil email login dari sesi Supabase Auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const emailLogin = user?.email;
 
-    async function ambilDataUser(email) {
-      const { data, error } = await supabase
-        .from('tb_anggota')
-        .select('email, user_aktif, instansi')
-        .eq('email', email)
-        .maybeSingle();
+  if (!emailLogin) {
+    alert("❌ Tidak ada sesi login aktif. Silakan login dulu.");
+    throw new Error("Tidak ada email login.");
+  }
 
-      if (error) {
-        console.error("❌ Supabase error:", error);
-        alert("❌ Gagal mengambil data user dari Supabase.");
-        return null;
+  // Ambil data user dari tb_anggota
+  const { data, error } = await supabase
+    .from('tb_anggota')
+    .select('email, user_aktif, instansi')
+    .eq('email', emailLogin)
+    .maybeSingle();
+
+  if (error) {
+    console.error("❌ Supabase error:", error);
+    alert("❌ Gagal mengambil data user dari Supabase.");
+    throw error;
+  }
+
+  if (!data) {
+    alert("❌ Email kamu tidak ditemukan di tb_anggota.");
+    throw new Error("Email tidak ditemukan.");
+  }
+
+  // Tampilkan status login kamu
+  alert(`✅ Kamu login sebagai: ${data.user_aktif}\nInstansi: ${data.instansi}`);
+
+  // Logika akses dashboard
+  document.querySelectorAll('.logo-box').forEach(box => {
+    const fiturDipilih = box.getAttribute('data-fitur');
+
+    box.addEventListener('click', () => {
+      if (data.user_aktif === "super admin") {
+        alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+        // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+      } else if (data.user_aktif === "admin") {
+        if (data.instansi === fiturDipilih) {
+          alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
+          // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
+        } else {
+          alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
+        }
+      } else {
+        alert("❌ Status user tidak dikenali atau belum aktif.");
       }
-
-      if (!data) {
-        alert("❌ Email tidak ditemukan di tb_anggota.");
-        return null;
-      }
-
-      return data;
-    }
-
-    const userData = await ambilDataUser(emailLogin);
-
-    if (userData) {
-      document.querySelectorAll('.logo-box').forEach(box => {
-        const fiturDipilih = box.getAttribute('data-fitur');
-
-        box.addEventListener('click', () => {
-          if (userData.user_aktif === "super admin") {
-            alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-          } else if (userData.user_aktif === "admin") {
-            if (userData.instansi === fiturDipilih) {
-              alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-            } else {
-              alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
-            }
-          } else {
-            alert("❌ Status user tidak dikenali atau tidak aktif.");
-          }
-        });
-      });
-    }
-  </script>
+    });
+  });
+</script>
 </body>
 </html>
+
