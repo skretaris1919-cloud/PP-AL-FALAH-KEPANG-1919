@@ -240,52 +240,53 @@ body {
     </div>
   </div>
 
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-<script>
-  // Simulasi data user aktif dari Supabase
-  const emailLogin = "user@example.com"; // email login aktif
-  const dataUserAktif = {
-    email: "user@example.com",
-    user_aktif: "admin", // atau "super admin"
-    instansi: "Keuangan", // misalnya "Keamanan", "Broadcast", dll
-    jabatan: "Bendahara"
-  };
+  // Inisialisasi Supabase
+  const supabaseUrl = 'https://YOUR_PROJECT_ID.supabase.co';
+  const supabaseKey = 'YOUR_PUBLIC_ANON_KEY';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
+  // Email login aktif (bisa dari session, localStorage, atau Supabase Auth)
+  const emailLogin = "user@example.com"; // Ganti dengan email login dinamis
+
+  // Ambil data user dari Supabase
+  const { data: userData, error } = await supabase
+    .from('tb_anggota')
+    .select('email, user_aktif, instansi')
+    .eq('email', emailLogin)
+    .single();
+
+  if (error || !userData) {
+    alert("❌ Gagal mengambil data user dari Supabase.");
+    throw error;
+  }
+
+  // Logika akses fitur
   document.querySelectorAll('.logo-box').forEach(box => {
     const fiturDipilih = box.getAttribute('data-fitur');
 
     box.addEventListener('click', () => {
-      // Validasi email cocok
-      if (emailLogin !== dataUserAktif.email) {
-        alert("❌ Email tidak cocok. Silakan login ulang.");
-        return;
-      }
-
-      // Super admin: akses semua fitur
-      if (dataUserAktif.user_aktif === "super admin") {
+      if (userData.user_aktif === "super admin") {
         alert("✅ Super admin: akses ke fitur " + fiturDipilih + " diizinkan.");
         // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
-        return;
-      }
-
-      // Admin: hanya bisa akses fitur sesuai instansi
-      if (dataUserAktif.user_aktif === "admin") {
-        if (dataUserAktif.instansi === fiturDipilih) {
+      } else if (userData.user_aktif === "admin") {
+        if (userData.instansi === fiturDipilih) {
           alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
           // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
         } else {
           alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
         }
-        return;
+      } else {
+        alert("❌ Status user tidak dikenali atau tidak aktif.");
       }
-
-      // Jika status tidak dikenali
-      alert("❌ Status user tidak dikenali atau tidak aktif.");
     });
   });
 </script>
 </body>
 </html>
+
 
 
 
