@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pesantren</title>
+  <style>
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100vh;
+  background: #f5f7fa;
+  color: #333;
+}
+
+/* Panel Kiri */
+.sidebar {
+  width: 30%;
+  background: #2e7d32;
+  color: white;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sidebar h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  margin: 12px 0;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Efek hover untuk list sidebar */
+.sidebar ul li:hover {
+  color: #ffeb3b; /* warna kuning terang */
+  animation: shake 0.4s ease;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #2e7d32;
+  text-align: center;
+}
+
+/* Animasi goyang */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+/* Panel Kanan */
+.main {
+  width: 70%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.logo-box {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.logo-box:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.logo-box img {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-box .label {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 1; /* Selalu terlihat */
+  text-align: center;
+}
+
+/* Responsif untuk HP */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .main {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .logo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .logo-box {
+    width: 80px;
+    height: 80px;
+  }
+
+  .logo-box img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .logo-box .label {
+    font-size: 12px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h1>Dashboard Pesantren</h1>
+    <ul>
+      <li>Beranda</li>
+      <li>Data Santri</li>
+      <li>Keuangan</li>
+      <li>Broadcast</li>
+      <li>Audit</li>
+    </ul>
+  </div>
+
+  <div class="main">
+  <h2 class="section-title">Saluran khidmat:</h2>
+    <div class="logo-grid">
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/KEAMANAN.png" alt="Keamanan"><div class="label">Keamanan</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/KESEHATAN.jpg" alt="Kesehatan"><div class="label">Kesehatan</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/UANG.jpg" alt="Keuangan"><div class="label">Keuangan</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/JDWAL.jpg" alt="Jadwal"><div class="label">Jadwal</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/PENDIDIKAN.jpeg" alt="Idadiyah"><div class="label">Idadiyah</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/PENDIDIKAN.jpeg" alt="Takhossus"><div class="label">Takhossus</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/PENDIDIKAN.jpeg" alt="Ibtidaiyah"><div class="label">Ibtidaiyah</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/PENDIDIKAN.jpeg" alt="Tsanawiyah"><div class="label">Tsanawiyah</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/WALI.jpg" alt="Wali Santri"><div class="label">Wali Santri</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/PENGURUS.jpg" alt="Performa Pengurus"><div class="label">Performa Pengurus</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/LAPORAN.jpg" alt="Laporan"><div class="label">Laporan</div></div>
+      <div class="logo-box"><img src="https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/QURANI.jpg" alt="Qurani"><div class="label">Qurani</div></div>
+    </div>
+  </div>
+
+</body>
+</html>
