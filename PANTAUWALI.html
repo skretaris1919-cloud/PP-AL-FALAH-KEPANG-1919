@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Pantau Wali Santri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
+    }
+
+.container {
+  max-width: 400px;
+  margin: 0 auto;         /* hilangkan margin atas */
+  padding: 0 15px 15px;   /* padding atas = 0 */
+  background-color: #e0f0ff;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+    h2 {
+      text-align: center;
+      color: #004080;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    #noid {
+      background-color: #ffe5b4;
+    }
+
+    .btn {
+      margin-top: 15px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #ff6600;
+      margin-top: 5px;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .form-row .form-group {
+      flex: 1 1 48%;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+<body style="margin:0; padding:0;">
+  <div class="container">
+<h2 style="margin:0; padding:0; font-size:18px; text-align:center; color:#004080;">
+  Data Santri Idadiyah-Takhossus
+</h2>
+<p style="margin:0; padding:0; font-size:12px; text-align:center; color:#555;">
+  PP Al Falah As Salafi Al Kholili Kepang
+</p>
+
+ <div class="form-group" style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+  <label for="noid" style="margin-bottom:6px;">No ID Santri</label>
+  <input type="text"
+         id="noid"
+         placeholder="Masukkan No ID"
+         oninput="ambilDataSantri(this.value)"
+         style="width:220px; text-align:center; padding:6px 12px; border-radius:6px; border:1px solid #ccc;">
+</div>
+
+<div class="form-group" style="text-align:center;">
+  <label for="foto-santri">Foto Santri</label>
+
+  <!-- Kotak branding tampil sejak awal -->
+  <div id="foto-box"
+       style="display:flex; justify-content:center; align-items:center; height:130px;
+              background-image: url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg');
+              background-size: cover;
+              background-position: center top;
+              border-radius: 8px;
+              box-shadow: 0 0 4px rgba(0,0,0,0.1);
+              position: relative;">
+    
+    <!-- Gambar santri, disembunyikan dulu -->
+    <img id="foto-santri"
+         src=""
+         alt="Foto Santri"
+         style="display:none; max-width:160px; max-height:120px; object-fit:cover; border-radius:8px; box-shadow:0 0 4px rgba(0,0,0,0.2);">
+
+    <!-- Ikon 📷 tampil sebelum gambar santri dimuat -->
+    <div id="foto-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:28px; color:#aaa;">
+      📷
+    </div>
+  </div>
+</div>
+
+    <div class="form-group">
+      <label for="nama">Nama Santri</label>
+      <input type="text" id="nama" readonly>
+    </div>
+
+    <div class="form-group">
+      <label for="alamat">Alamat</label>
+      <input type="text" id="alamat" readonly>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="kamar">Kamar</label>
+        <input type="text" id="kamar" readonly>
+      </div>
+      <div class="form-group">
+        <label for="saldo-kiriman">Saldo Kiriman</label>
+        <input type="text" id="saldo-kiriman" readonly>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="saldo-tabungan">Saldo Tabungan</label>
+        <input type="text" id="saldo-tabungan" readonly>
+      </div>
+      <div class="form-group">
+        <label for="pengeluaran-hari">Pengeluaran Hari Ini</label>
+        <input type="text" id="pengeluaran-hari" readonly>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="pengeluaran-pekan">Pengeluaran 1 Pekan</label>
+        <input type="text" id="pengeluaran-pekan" readonly>
+      </div>
+      <div class="form-group">
+        <label for="pengeluaran-bulan">Pengeluaran 1 Bulan</label>
+        <input type="text" id="pengeluaran-bulan" readonly>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="nowa">No WA Wali Santri</label>
+      <input type="text" id="nowa" placeholder="Contoh: 6281234567890">
+      <div class="note">Nomor WA harus dimulai dengan <strong>628xxxx</strong></div>
+      <div id="wa-error" class="error"></div>
+    </div>
+
+    <button class="btn" onclick="validasiWA()">Simpan</button>
+  </div>
+
+<div id="modal-konfirmasi" style="
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  backdrop-filter:blur(5px);
+  background-color:rgba(0,0,0,0.3);
+  z-index:9999;
+  justify-content:center;
+  align-items:center;
+">
+<div style="
+  background-color:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.3);
+  width:90%;
+  max-width:500px;
+  max-height:80vh;
+  overflow-y:auto;
+  font-size:14px;
+  color:#333;
+">
+    <p id="modal-info" style="margin-bottom:15px;"></p>
+    <div style="display:flex; justify-content:center; gap:10px;">
+      <button id="btn-terapkan" style="
+        background-color:#28a745;
+        color:white;
+        border:none;
+        padding:8px 12px;
+        border-radius:6px;
+        cursor:pointer;
+        font-weight:bold;
+      ">✅ Terapkan</button>
+      <button id="btn-urungkan" style="
+        background-color:#dc3545;
+        color:white;
+        border:none;
+        padding:8px 12px;
+        border-radius:6px;
+        cursor:pointer;
+        font-weight:bold;
+      ">❌ Urungkan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const supabaseHeaders = {
+    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc",
+    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc",
+    "Content-Type": "application/json"
+  };
+
+  function ambilDataSantri(noid) {
+    if (!noid || noid.length < 3) return;
+
+    const url = `https://brnqpdvtninzyqqwhmfj.supabase.co/rest/v1/tb_saldo?select=nama,alamat,nama_kamar,saldo_tabungan,jumlah_kiriman,foto_url&no_id=eq.${noid}&limit=1`;
+
+    fetch(url, { headers: supabaseHeaders })
+      .then(res => {
+        if (!res.ok) throw new Error("Gagal ambil data (status " + res.status + ")");
+        return res.json();
+      })
+      .then(data => {
+        const imgEl = document.getElementById("foto-santri");
+        const icon = document.getElementById("foto-icon");
+        const box = document.getElementById("foto-box");
+
+        if (!data || data.length === 0) {
+          document.getElementById("nama").value = "❌ Tidak ditemukan";
+          document.getElementById("alamat").value = "";
+          document.getElementById("kamar").value = "";
+          document.getElementById("saldo-kiriman").value = "";
+          document.getElementById("saldo-tabungan").value = "";
+          hapusPengeluaran();
+
+          if (imgEl) imgEl.style.display = "none";
+          if (icon) icon.style.display = "block";
+          if (box) box.style.backgroundImage = `url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg')`;
+          return;
+        }
+
+        const santri = data[0];
+        document.getElementById("nama").value = santri.nama || "";
+        document.getElementById("alamat").value = santri.alamat || "";
+        document.getElementById("kamar").value = santri.nama_kamar || "";
+        document.getElementById("saldo-kiriman").value = formatRupiah(santri.jumlah_kiriman || 0);
+        document.getElementById("saldo-tabungan").value = formatRupiah(santri.saldo_tabungan || 0);
+
+        if (santri.foto_url && imgEl && icon && box) {
+          imgEl.src = santri.foto_url;
+          imgEl.style.display = "block";
+          icon.style.display = "none";
+          box.style.backgroundImage = `url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg')`;
+        } else {
+          imgEl.style.display = "none";
+          icon.style.display = "block";
+          box.style.backgroundImage = `url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg')`;
+        }
+
+        ambilPengeluaran(noid);
+      })
+      .catch(err => {
+        console.error("❌ Gagal ambil data:", err);
+        document.getElementById("nama").value = "❌ Error";
+        document.getElementById("alamat").value = "";
+        document.getElementById("kamar").value = "";
+        document.getElementById("saldo-kiriman").value = "";
+        document.getElementById("saldo-tabungan").value = "";
+        hapusPengeluaran();
+
+        const imgEl = document.getElementById("foto-santri");
+        const icon = document.getElementById("foto-icon");
+        const box = document.getElementById("foto-box");
+
+        if (imgEl) imgEl.style.display = "none";
+        if (icon) icon.style.display = "block";
+        if (box) box.style.backgroundImage = `url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg')`;
+      });
+  }
+
+// Minta izin notifikasi saat halaman dimuat
+if (Notification.permission !== "granted") {
+  Notification.requestPermission().then(permission => {
+    console.log("🔔 Izin notifikasi:", permission);
+  });
+}
+
+// Fungsi notifikasi browser asli
+function kirimNotifikasiBrowser(judul, isi) {
+  if (Notification.permission === "granted") {
+    new Notification(judul, {
+      body: isi,
+      icon: "https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg"
+    });
+  } else {
+    console.warn("❌ Notifikasi ditolak atau belum diizinkan.");
+  }
+}
+
+  function hapusPengeluaran() {
+    document.getElementById("pengeluaran-hari").value = "";
+    document.getElementById("pengeluaran-pekan").value = "";
+    document.getElementById("pengeluaran-bulan").value = "";
+  }
+
+  function ambilPengeluaran(noid) {
+    const now = new Date();
+    const hariIni = now.toISOString().slice(0, 10);
+    const pekanLalu = new Date(now.getTime() - 7 * 86400000).toISOString();
+    const bulanLalu = new Date(now.getTime() - 30 * 86400000).toISOString();
+
+    const baseURL = "https://brnqpdvtninzyqqwhmfj.supabase.co/rest/v1/tb_transaksi";
+
+    const queryHari = `${baseURL}?select=nominal&waktu=gte.${hariIni}&no_id=eq.${noid}`;
+    const queryPekan = `${baseURL}?select=nominal&waktu=gte.${pekanLalu}&no_id=eq.${noid}`;
+    const queryBulan = `${baseURL}?select=nominal&waktu=gte.${bulanLalu}&no_id=eq.${noid}`;
+
+    Promise.all([
+      fetch(queryHari, { headers: supabaseHeaders }).then(res => res.json()),
+      fetch(queryPekan, { headers: supabaseHeaders }).then(res => res.json()),
+      fetch(queryBulan, { headers: supabaseHeaders }).then(res => res.json())
+    ])
+    .then(([hari, pekan, bulan]) => {
+      const filterNominal = arr => arr
+        .map(t => parseInt(t.nominal || 0))
+        .filter(n => n > 0 && n < 10000000);
+
+      const totalHari = filterNominal(hari).reduce((sum, n) => sum + n, 0);
+      const totalPekan = filterNominal(pekan).reduce((sum, n) => sum + n, 0);
+      const totalBulan = filterNominal(bulan).reduce((sum, n) => sum + n, 0);
+
+      document.getElementById("pengeluaran-hari").value = formatRupiah(totalHari);
+      document.getElementById("pengeluaran-pekan").value = formatRupiah(totalPekan);
+      document.getElementById("pengeluaran-bulan").value = formatRupiah(totalBulan);
+    })
+    .catch(err => {
+      console.error("❌ Gagal ambil pengeluaran:", err);
+      document.getElementById("pengeluaran-hari").value = "Rp 0";
+      document.getElementById("pengeluaran-pekan").value = "Rp 0";
+      document.getElementById("pengeluaran-bulan").value = "Rp 0";
+    });
+  }
+
+function validasiWA() {
+  const nowa = document.getElementById("nowa").value.trim();
+  const noid = document.getElementById("noid").value.trim();
+  const nama = document.getElementById("nama").value.trim();
+  const saldo = document.getElementById("saldo-kiriman").value.trim();
+  const errorDiv = document.getElementById("wa-error");
+  const modal = document.getElementById("modal-konfirmasi");
+  const info = document.getElementById("modal-info");
+
+  function tampilkanError(pesan) {
+    errorDiv.textContent = "❌ " + pesan;
+    kirimNotifikasiBrowser("Validasi Gagal", pesan);
+  }
+
+  // Validasi nomor WA
+  if (!nowa.startsWith("628")) {
+    tampilkanError("Nomor WA harus dimulai dengan 628.");
+    modal.style.display = "none";
+    return;
+  }
+
+  if (nowa.length < 10 || nowa.length > 15) {
+    tampilkanError("Panjang nomor WA tidak valid.");
+    modal.style.display = "none";
+    return;
+  }
+
+  // Validasi No ID
+  if (!noid || noid.length < 3) {
+    tampilkanError("No ID Santri tidak boleh kosong.");
+    modal.style.display = "none";
+    return;
+  }
+
+  // Validasi Nama Santri
+  if (!nama || nama === "❌ Tidak ditemukan" || nama === "❌ Error") {
+    tampilkanError("Nama santri belum valid atau belum ditemukan.");
+    modal.style.display = "none";
+    return;
+  }
+
+  // Jika semua validasi lolos → tampilkan modal konfirmasi
+  errorDiv.textContent = "";
+
+  info.innerHTML = `
+    <h3 style="margin-top:0; margin-bottom:10px;">Ketentuan dan Biaya:</h3>
+    Program ini jika diterapkan maka akan terkonsekuensi bagi pengguna:
+    <ol style="padding-left:18px; margin-top:5px;">
+      <li>Mendapatkan informasi terkait aktivitas keuangan anaknya di pesantren.</li>
+      <li>Menerima notifikasi by WhatsApp saat anaknya melakukan transaksi.</li>
+      <li>Menerima laporan perkembangan pelajaran.</li>
+    </ol>
+
+    <p style="margin-top:10px;">
+    Ketentuan dari program ini akan dipungut biaya satu kali <strong>Rp30.000</strong> untuk penggunaan sampai santri terkait lulus atau keluar dari lembaga Idadiyah-Takhossus.
+    Biaya tersebut kami tujukan untuk administrasi yang meliputi beberapa biaya sbb.:
+    </p>
+    <ul style="padding-left:18px;">
+      <li>Tagihan bulanan server WhatsApp</li>
+      <li>Tagihan server penyimpanan dan pengamanan data</li>
+      <li>Biaya operasional lembaga Idadiyah-Takhosus</li>
+    </ul>
+
+    <p style="margin-top:10px;">
+    Biaya tersebut akan dipotong otomatis dari saldo putra Anda:
+    </p>
+    <p>
+    <strong>Nama:</strong> ${nama}<br>
+    <strong>No ID:</strong> ${noid}<br>
+    <strong>Saldo Kiriman:</strong> ${saldo}
+    </p>
+
+ <p style="margin-top:10px; margin-bottom:4px; line-height:1.4;">
+  Apakah Anda menyetujui untuk menerapkan program ini?
+</p>
+<p style="margin-top:4px; line-height:1.4;">
+  Apakah Anda ingin mengurungkan untuk menerapkan program ini karena pertimbangan saldo putra Anda tidak mencukupi?
+</p>
+  `;
+
+  modal.style.display = "flex";
+  modal.dataset.noid = noid;
+  modal.dataset.nowa = nowa;
+}
+
+  function kosongkanForm() {
+    const ids = [
+      "noid", "nama", "alamat", "kamar", "saldo-kiriman", "saldo-tabungan",
+      "pengeluaran-hari", "pengeluaran-pekan", "pengeluaran-bulan", "nowa"
+    ];
+    ids.forEach(id => document.getElementById(id).value = "");
+        document.getElementById("wa-error").textContent = "";
+
+    const imgEl = document.getElementById("foto-santri");
+    const icon = document.getElementById("foto-icon");
+    const box = document.getElementById("foto-box");
+
+    if (imgEl) imgEl.style.display = "none";
+    if (icon) icon.style.display = "block";
+    if (box) box.style.backgroundImage = `url('https://brnqpdvtninzyqqwhmfj.supabase.co/storage/v1/object/public/fotoku12/tausiah.jpg')`;
+  }
+
+  function formatRupiah(nilai) {
+    if (typeof nilai !== "number") nilai = parseInt(nilai) || 0;
+    return "Rp " + nilai.toLocaleString("id-ID");
+  }
+
+document.getElementById("btn-terapkan").addEventListener("click", () => {
+  const modal = document.getElementById("modal-konfirmasi");
+  const noid = modal.dataset.noid;
+  const nowa = modal.dataset.nowa;
+  const nama = document.getElementById("nama").value.trim();
+
+  const biayaProgram = 30000;
+  const saldoInput = document.getElementById("saldo-tabungan").value;
+  const saldoAkhirAwal = Number(saldoInput.replace(/\D/g, "")) || 0;
+
+  if (saldoAkhirAwal < biayaProgram) {
+    const pesan = `Gagal: saldo atas nama ${nama} dengan No ID ${noid} tidak mencukupi untuk biaya program.`;
+    document.getElementById("wa-error").textContent = "❌ " + pesan;
+    kirimNotifikasiBrowser("Gagal Simpan", pesan);
+    modal.style.display = "none";
+    return;
+  }
+
+  // Ambil jumlah_kiriman dan saldo_akhir dari Supabase
+  const urlGet = `https://brnqpdvtninzyqqwhmfj.supabase.co/rest/v1/tb_saldo?no_id=eq.${noid}&select=jumlah_kiriman,saldo_akhir`;
+  fetch(urlGet, { headers: supabaseHeaders })
+    .then(res => res.json())
+    .then(data => {
+      const jumlahKirimanAwal = Number(data[0]?.jumlah_kiriman || 0);
+      const saldoAkhirSebelum = Number(data[0]?.saldo_akhir || 0);
+
+      // Validasi tambahan: jumlah kiriman minimal Rp70.000
+      if (jumlahKirimanAwal < 70000) {
+        const pesan = `Gagal: jumlah kiriman atas nama ${nama} dengan No ID ${noid} kurang dari Rp70.000. Minimal kiriman harus Rp70.000 untuk melanjutkan proses.`;
+        document.getElementById("wa-error").textContent = "❌ " + pesan;
+        kirimNotifikasiBrowser("Gagal Simpan", pesan);
+        modal.style.display = "none";
+        throw new Error("Jumlah kiriman tidak mencukupi");
+      }
+
+      const jumlahKirimanBaru = jumlahKirimanAwal - biayaProgram;
+      const saldoAkhirBaru = saldoAkhirSebelum - biayaProgram;
+
+      // PATCH ke Supabase
+      const urlPatch = `https://brnqpdvtninzyqqwhmfj.supabase.co/rest/v1/tb_saldo?no_id=eq.${noid}`;
+      const body = JSON.stringify({
+        wa: nowa,
+        jumlah_kiriman: String(jumlahKirimanBaru),
+        saldo_akhir: String(saldoAkhirBaru),
+        status: "Aktif",
+        bayar_sistem: "Lunas"
+      });
+
+      return fetch(urlPatch, {
+        method: "PATCH",
+        headers: supabaseHeaders,
+        body: body
+      });
+    })
+    .then(async res => {
+      const text = await res.text();
+      console.log("📦 Respons Supabase:", text);
+      if (!res.ok) throw new Error("Gagal update (status " + res.status + ")");
+      return text ? JSON.parse(text) : {};
+    })
+    .then(() => {
+      alert("✅ WA disimpan, saldo akhir dan jumlah kiriman berhasil dikurangi. Status dan sistem pembayaran juga diperbarui.");
+      kirimNotifikasiBrowser("Berhasil Disimpan", "Data santri telah diperbarui: saldo, kiriman, status, dan sistem pembayaran.");
+      kosongkanForm();
+      modal.style.display = "none";
+    })
+    .catch(err => {
+      console.error("❌ Gagal simpan:", err);
+      if (!document.getElementById("wa-error").textContent.includes("❌")) {
+        document.getElementById("wa-error").textContent = "❌ Gagal menyimpan ke server.";
+        kirimNotifikasiBrowser("Gagal Simpan", "Terjadi kesalahan saat menyimpan ke server.");
+      }
+      modal.style.display = "none";
+    });
+});
+
+</script>
+</body>
+</html>
+   
