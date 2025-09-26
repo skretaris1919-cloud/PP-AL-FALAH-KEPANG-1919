@@ -151,32 +151,45 @@
   <div class="main">
     <h2 class="section-title">Saluran khidmat:</h2>
     <div class="logo-grid">
-      <!-- Semua logo-box fitur kamu tetap seperti semula -->
-      <!-- Tidak saya ubah karena sudah presisi -->
-      <!-- ... -->
+      <div class="logo-box" data-fitur="Keuangan">
+        <img src="https://via.placeholder.com/64" alt="Keuangan">
+        <div class="label">Keuangan</div>
+      </div>
+      <div class="logo-box" data-fitur="Kesiswaan">
+        <img src="https://via.placeholder.com/64" alt="Kesiswaan">
+        <div class="label">Kesiswaan</div>
+      </div>
+      <div class="logo-box" data-fitur="Pimpinan">
+        <img src="https://via.placeholder.com/64" alt="Pimpinan">
+        <div class="label">Pimpinan</div>
+      </div>
     </div>
   </div>
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  // Inisialisasi Supabase
   const supabaseUrl = 'https://brnqpdvtninzyqqwhmfj.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybnFwZHZ0bmluenlxcXdobWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjU3OTQsImV4cCI6MjA3MzE0MTc5NH0.6u2P5ANnDV1237hEY73M0OHRDftwc3-G0JbRx44YcZc';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Ambil email login dari sesi Supabase Auth
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  const emailLogin = user?.email;
-
-  console.log("📥 Email login dari sesi Supabase:", emailLogin);
+  // 🔍 Tahap 1: Ambil email login dari URL atau sesi Supabase Auth
+  const urlParams = new URLSearchParams(window.location.search);
+  let emailLogin = urlParams.get('email');
 
   if (!emailLogin) {
-    alert("❌ Tidak ada sesi login aktif. Silakan login dulu.");
-    throw new Error("Tidak ada email login.");
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    emailLogin = user?.email;
   }
 
-  // Ambil data user dari tb_anggota
+  console.log("📥 Email login yang digunakan:", emailLogin);
+
+  if (!emailLogin) {
+    alert("❌ Tidak ada email login. Silakan login dulu.");
+    throw new Error("Email login tidak ditemukan.");
+  }
+
+  // 🔍 Tahap 2: Ambil data user dari tb_anggota
   const { data, error } = await supabase
     .from('tb_anggota')
     .select('email, user_aktif, instansi')
@@ -196,16 +209,15 @@
     throw new Error("Email tidak ditemukan.");
   }
 
-  // Tampilkan status login kamu
+  // ✅ Tampilkan status login kamu
   alert(`✅ Kamu login sebagai:\n📧 Email: ${data.email}\n🔐 Status: ${data.user_aktif}\n🏢 Instansi: ${data.instansi}`);
 
-  // Log ke console untuk audit teknis
   console.log("✅ Login berhasil:");
   console.log("📧 Email:", data.email);
   console.log("🔐 Status:", data.user_aktif);
   console.log("🏢 Instansi:", data.instansi);
 
-  // Logika akses dashboard
+  // 🔐 Logika akses dashboard
   document.querySelectorAll('.logo-box').forEach(box => {
     const fiturDipilih = box.getAttribute('data-fitur');
 
@@ -216,17 +228,18 @@
       } else if (data.user_aktif === "admin") {
         if (data.instansi === fiturDipilih) {
           alert("✅ Admin: akses ke fitur " + fiturDipilih + " diizinkan.");
-          // window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
-        } else {
-          alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
-        }
+                  window.location.href = `/fitur/${fiturDipilih.toLowerCase()}.html`;
       } else {
-        alert("❌ Status user tidak dikenali atau belum aktif.");
+        alert("❌ Admin: akses ditolak. Instansi tidak cocok untuk fitur " + fiturDipilih);
       }
-    });
+    } else {
+      alert("❌ Status user tidak dikenali atau belum aktif.");
+    }
   });
+});
 </script>
 </body>
 </html>
+
 
 
